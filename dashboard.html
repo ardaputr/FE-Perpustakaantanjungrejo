@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <h2>Dashboard Admin - Data Buku</h2>
+      <button onclick="window.location.href='tambah.html'">
+        + Tambah Buku
+      </button>
+      <button onclick="window.location.href='history.html'">
+        Riwayat Peminjaman
+      </button>
+      <table>
+        <thead>
+          <tr>
+            <th>Gambar</th>
+            <th>Judul</th>
+            <th>Penulis</th>
+            <th>Penerbit</th>
+            <th>Tahun</th>
+            <th>Stok</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="booksTableBody">
+          <!-- data buku akan muncul disini -->
+        </tbody>
+      </table>
+    </div>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>
