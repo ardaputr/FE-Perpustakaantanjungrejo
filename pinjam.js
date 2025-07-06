@@ -10,7 +10,9 @@ document.getElementById("tanggal_pinjam").valueAsDate = new Date();
 
 async function loadBook() {
   try {
-    const res = await fetch(`http://localhost:3000/admin/books/${id_buku}`);
+    const res = await fetch(
+      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`
+    );
     const data = await res.json();
 
     if (!res.ok) throw new Error(data.error || "Gagal mengambil data buku");
@@ -44,11 +46,14 @@ form.addEventListener("submit", async (e) => {
   };
 
   try {
-    const res = await fetch("http://localhost:3000/admin/pinjam", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(peminjaman),
-    });
+    const res = await fetch(
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/pinjam",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(peminjaman),
+      }
+    );
 
     const data = await res.json();
 

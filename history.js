@@ -2,7 +2,9 @@ const tableBody = document.getElementById("historyTableBody");
 
 async function fetchHistory() {
   try {
-    const res = await fetch("http://localhost:3000/admin/history");
+    const res = await fetch(
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/history"
+    );
     const data = await res.json();
 
     tableBody.innerHTML = "";
@@ -39,9 +41,12 @@ async function fetchHistory() {
 async function kembalikan(id) {
   if (confirm("Yakin ingin mengembalikan buku ini?")) {
     try {
-      const res = await fetch(`http://localhost:3000/admin/history/${id}`, {
-        method: "PUT",
-      });
+      const res = await fetch(
+        `https://be-perpustakaantanjungrejo.vercel.app/admin/history/${id}`,
+        {
+          method: "PUT",
+        }
+      );
       const data = await res.json();
       if (res.ok) {
         alert("Buku berhasil dikembalikan.");

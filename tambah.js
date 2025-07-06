@@ -17,11 +17,14 @@ form.addEventListener("submit", async (e) => {
   };
 
   try {
-    const res = await fetch("http://localhost:3000/admin/books", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dataBuku),
-    });
+    const res = await fetch(
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataBuku),
+      }
+    );
 
     const data = await res.json();
     console.log("Response:", data);

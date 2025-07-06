@@ -1,9 +1,20 @@
 const tableBody = document.getElementById("booksTableBody");
 
+function logout() {
+  if (confirm("Yakin ingin logout?")) {
+    // Hapus session/token jika ada
+    localStorage.removeItem("adminToken");
+    sessionStorage.removeItem("adminToken");
+
+    // Redirect ke halaman login
+    window.location.href = "login.html";
+  }
+}
+
 async function fetchBooks() {
   try {
     const res = await fetch(
-      "http://be-perpustakaantanjungrejo.vercel.app/admin/books"
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/books"
     );
     const data = await res.json();
 
@@ -39,7 +50,7 @@ async function hapusBuku(id) {
   if (confirm("Apakah anda yakin ingin menghapus buku ini?")) {
     try {
       const res = await fetch(
-        `http://be-perpustakaantanjungrejo.vercel.app/admin/books/${id}`,
+        `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id}`,
         {
           method: "DELETE",
         }

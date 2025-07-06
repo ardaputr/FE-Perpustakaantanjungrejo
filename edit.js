@@ -7,7 +7,9 @@ const id_buku = urlParams.get("id");
 
 async function fetchBook() {
   try {
-    const res = await fetch(`http://localhost:3000/admin/books/${id_buku}`);
+    const res = await fetch(
+      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`
+    );
     const data = await res.json();
 
     if (!res.ok) {
@@ -46,11 +48,14 @@ form.addEventListener("submit", async (e) => {
   };
 
   try {
-    const res = await fetch(`http://localhost:3000/admin/books/${id_buku}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dataBuku),
-    });
+    const res = await fetch(
+      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataBuku),
+      }
+    );
 
     const data = await res.json();
 
