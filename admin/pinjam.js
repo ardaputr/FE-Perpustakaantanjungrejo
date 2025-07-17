@@ -61,6 +61,11 @@ form.addEventListener("submit", async (e) => {
       message.style.color = "green";
       message.textContent = "Peminjaman berhasil dicatat!";
       form.reset();
+
+      // Arahkan ke dashboard setelah 1.5 detik
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1500);
     } else {
       message.style.color = "red";
       message.textContent = data.error || "Gagal meminjam buku.";
@@ -71,5 +76,6 @@ form.addEventListener("submit", async (e) => {
     message.textContent = "Terjadi kesalahan pada server.";
   }
 });
+
 
 loadBook();

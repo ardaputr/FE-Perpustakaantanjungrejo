@@ -22,11 +22,13 @@ async function fetchHistory() {
         <td>${item.tanggal_pengembalian || "-"}</td>
         <td>${item.status}</td>
         <td>
-          ${
-            item.status === "Dipinjam"
-              ? `<button onclick="kembalikan(${item.id_peminjaman})">Kembalikan</button>`
-              : "-"
-          }
+          <div class="action-buttons">
+            ${
+              item.status === "Dipinjam"
+                ? `<button class='btn-kembalikan' onclick='kembalikan(${item.id_peminjaman})'>Kembalikan</button>`
+                : "-"
+            }
+          </div>
         </td>
       `;
       tableBody.appendChild(row);

@@ -7,7 +7,7 @@ function logout() {
     sessionStorage.removeItem("adminToken");
 
     // Redirect ke halaman login
-    window.location.href = "login.html";
+    window.location.href = "HomePage.html";
   }
 }
 
