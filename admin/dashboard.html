@@ -448,10 +448,10 @@
                         <img src="${buku.link_gambar}" alt="cover" class="book-img" 
                              onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjVmNWRjIi8+CjxwYXRoIGQ9Ik02MCA2MEgxNDBWMTQwSDYwVjYwWiIgZmlsbD0iIzFhMjM3ZSIvPgo8dGV4dCB4PSIxMDAiIHk9IjExMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCI+8J+TmjwvdGV4dD4KPC9zdmc+'" />
                     </td>
-                    <td class="book-title">${buku.judul}</td>
-                    <td>${buku.penulis}</td>
-                    <td>${buku.penerbit}</td>
-                    <td>${buku.tahun_terbit}</td>
+                    <td class="book-title">${buku.judul ? buku.judul : '-'}</td>
+                    <td>${buku.penulis ? buku.penulis : '-'}</td>
+                    <td>${buku.penerbit ? buku.penerbit : '-'}</td>
+                    <td>${buku.tahun_terbit ? buku.tahun_terbit : '-'}</td>
                     <td ${stockClass}>${stockText}</td>
                     <td>
                         <div class="action-buttons">

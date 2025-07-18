@@ -620,9 +620,9 @@
             <div class="book-info">
               <h3 class="book-title">${book.judul}</h3>
               <div class="book-meta">
-                <span>Penulis: <b>${book.penulis}</b></span>
-                <span>Penerbit: ${book.penerbit}</span>
-                <span>Tahun: ${book.tahun_terbit}</span>
+                <span>Penulis: <b>${book.penulis ? book.penulis : '-'}</b></span>
+                <span>Penerbit: ${book.penerbit ? book.penerbit : '-'}</span>
+                <span>Tahun: ${book.tahun_terbit ? book.tahun_terbit : '-'}</span>
               </div>
               <span class="${badgeClass}">${badgeText}</span>
             </div>
@@ -699,9 +699,9 @@
             <div class="book-info">
               <h3 class="book-title">${book.judul}</h3>
               <div class="book-meta">
-                <span>Penulis: <b>${book.penulis}</b></span>
-                <span>Penerbit: ${book.penerbit}</span>
-                <span>Tahun: ${book.tahun_terbit}</span>
+                <span>Penulis: <b>${book.penulis ? book.penulis : '-'}</b></span>
+                <span>Penerbit: ${book.penerbit ? book.penerbit : '-'}</span>
+                <span>Tahun: ${book.tahun_terbit ? book.tahun_terbit : '-'}</span>
               </div>
               <span class="${badgeClass}">${badgeText}</span>
             </div>
