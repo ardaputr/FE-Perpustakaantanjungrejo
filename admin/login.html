@@ -153,12 +153,15 @@
       <p id="message"></p>
     </div>
 
-    <!-- <script>
-    // Jika sudah login, redirect ke dashboard
-    if (localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken')) {
-      window.location.href = 'dashboard.html';
-    }
-    </script> -->
+    <script>
+      // Jika sudah login, redirect ke dashboard
+      if (
+        localStorage.getItem("adminToken") ||
+        sessionStorage.getItem("adminToken")
+      ) {
+        window.location.href = "dashboard.html";
+      }
+    </script>
 
     <script>
       const form = document.getElementById("loginForm");
@@ -199,7 +202,7 @@
       }
     </script>
 
-    <!-- <script src="script.js"></script> -->
+    <script src="script.js"></script>
 
     <footer>
       <img src="logo1.png" alt="Logo 1" />
