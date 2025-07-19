@@ -100,6 +100,15 @@
         transition: background 0.2s;
       }
 
+      .table-container table td img,
+      #historyTableBody img {
+        max-width: 48px;
+        max-height: 64px;
+        object-fit: contain;
+        border-radius: 6px;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+      }
+
       .back-btn {
         background: linear-gradient(90deg, #2563eb 60%, #60a5fa 100%);
         color: #fff;
@@ -184,6 +193,14 @@
         font-weight: 600;
         letter-spacing: 1px;
         vertical-align: middle;
+      }
+
+      @media (max-width: 600px) {
+        .table-container table td img,
+        #historyTableBody img {
+          max-width: 36px;
+          max-height: 48px;
+        }
       }
 
       @media (max-width: 900px) {
