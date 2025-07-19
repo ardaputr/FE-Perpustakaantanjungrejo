@@ -1,51 +1,5 @@
 const tableBody = document.getElementById("historyTableBody");
 
-// Fungsi untuk mendapatkan token admin
-function getAdminToken() {
-  return sessionStorage.getItem("adminToken");
-}
-
-// Fungsi untuk fetch history dengan autentikasi
-async function fetchHistory() {
-  const token = getAdminToken();
-  if (!token) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  try {
-    const res = await fetch(
-      "https://be-perpustakaantanjungrejo.vercel.app/admin/history",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!res.ok) {
-      if (res.status === 401) {
-        sessionStorage.removeItem("adminToken");
-        window.location.href = "login.html";
-        return;
-      }
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-
-    const data = await res.json();
-    renderHistory(data);
-  } catch (err) {
-    console.error("Gagal mengambil riwayat peminjaman:", err);
-    tableBody.innerHTML = `
-      <tr>
-        <td colspan="8" class="error">
-          ❌ Gagal memuat riwayat. Silakan coba lagi nanti.
-        </td>
-      </tr>
-    `;
-  }
-}
-
 // Fungsi untuk render history
 function renderHistory(data) {
   tableBody.innerHTML = "";
@@ -91,25 +45,19 @@ function renderHistory(data) {
 // Fungsi untuk mengembalikan buku
 async function kembalikan(id) {
   if (confirm("Yakin ingin mengembalikan buku ini?")) {
-    const token = getAdminToken();
-    if (!token) {
-      window.location.href = "login.html";
-      return;
-    }
-
     try {
       const res = await fetch(
         `https://be-perpustakaantanjungrejo.vercel.app/admin/history/${id}`,
         {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: 'include'
         }
       );
-
+      if (res.status === 401 || res.status === 403) {
+        window.location.href = '../HomePage.html';
+        return;
+      }
       const data = await res.json();
-
       if (res.ok) {
         alert("✅ Buku berhasil dikembalikan.");
         fetchHistory();
@@ -124,11 +72,4 @@ async function kembalikan(id) {
 }
 
 // Panggil fungsi saat halaman dimuat
-document.addEventListener("DOMContentLoaded", () => {
-  if (!getAdminToken()) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  fetchHistory();
-});
+document.addEventListener("DOMContentLoaded", fetchHistory);

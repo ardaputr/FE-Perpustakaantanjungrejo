@@ -1,16 +1,6 @@
 const form = document.getElementById("tambahForm");
 const message = document.getElementById("message");
 
-// Fungsi untuk mendapatkan token admin
-function getAdminToken() {
-  return sessionStorage.getItem("adminToken");
-}
-
-// Cek login status
-if (!getAdminToken()) {
-  window.location.href = "login.html";
-}
-
 const inputJudul = document.getElementById("judul");
 const inputPenulis = document.getElementById("penulis");
 const inputPenerbit = document.getElementById("penerbit");
@@ -24,27 +14,11 @@ let allBooks = [];
 
 // Ambil semua data buku saat halaman dimuat
 async function fetchBooks() {
-  const token = getAdminToken();
   try {
     const res = await fetch(
       "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { method: "GET", credentials: "include" }
     );
-
-    if (!res.ok) {
-      if (res.status === 401) {
-        sessionStorage.removeItem("adminToken");
-        window.location.href = "login.html";
-        return;
-      }
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-
-    const res = await fetch("https://be-perpustakaantanjungrejo.vercel.app/admin/books", { credentials: 'include' });
     if (res.status === 401 || res.status === 403) {
       window.location.href = '../HomePage.html';
       return;
@@ -87,7 +61,6 @@ inputJudul.addEventListener("input", () => {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const token = getAdminToken();
 
   const dataBuku = {
     judul: inputJudul.value.trim(),
@@ -132,12 +105,16 @@ form.addEventListener("submit", async (e) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(dataBuku),
+        credentials: 'include'
       }
     );
+    if (res.status === 401 || res.status === 403) {
+      window.location.href = '../HomePage.html';
+      return;
+    }
 
     const result = await res.json();
 
