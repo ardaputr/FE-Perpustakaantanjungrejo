@@ -1,17 +1,22 @@
+// pinjam.js
+
 const form = document.getElementById("pinjamForm");
 const message = document.getElementById("message");
 const bookDetailDiv = document.getElementById("bookDetail");
 
-// Fungsi untuk mendapatkan token admin
-function getAdminToken() {
-  return sessionStorage.getItem("adminToken");
-}
+// Proteksi session admin
+(async function () {
+  const res = await fetch(
+    "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+    { method: "GET", credentials: "include" }
+  );
+  if (res.status === 401) {
+    window.location.href = "login.html";
+    return;
+  }
+})();
 
-// Cek login status
-if (!getAdminToken()) {
-  window.location.href = "login.html";
-}
-
+// Ambil ID buku dari URL query ?id=...
 const urlParams = new URLSearchParams(window.location.search);
 const id_buku = urlParams.get("id");
 
@@ -25,20 +30,14 @@ if (!id_buku) {
 document.getElementById("tanggal_pinjam").valueAsDate = new Date();
 
 async function loadBook() {
-  const token = getAdminToken();
   try {
     const res = await fetch(
       `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { credentials: "include" }
     );
 
     if (!res.ok) {
       if (res.status === 401) {
-        sessionStorage.removeItem("adminToken");
         window.location.href = "login.html";
         return;
       }
@@ -69,7 +68,6 @@ async function loadBook() {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const token = getAdminToken();
 
   const peminjaman = {
     id_buku,
@@ -96,10 +94,8 @@ form.addEventListener("submit", async (e) => {
       "https://be-perpustakaantanjungrejo.vercel.app/admin/pinjam",
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(peminjaman),
       }
     );
@@ -126,5 +122,5 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Panggil fungsi saat halaman dimuat
+// Jalankan saat halaman dimuat
 loadBook();

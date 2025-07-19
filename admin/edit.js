@@ -1,15 +1,19 @@
+// edit.js
+
 const form = document.getElementById("editForm");
 const message = document.getElementById("message");
 
-// Fungsi untuk mendapatkan token admin
-function getAdminToken() {
-  return sessionStorage.getItem("adminToken");
-}
-
-// Cek login status
-if (!getAdminToken()) {
-  window.location.href = "login.html";
-}
+// PROTEKSI SESSION ADMIN
+(async function () {
+  const res = await fetch(
+    "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+    { method: "GET", credentials: "include" }
+  );
+  if (res.status === 401) {
+    window.location.href = "login.html";
+    return;
+  }
+})();
 
 // Ambil ID buku dari URL query ?id=...
 const urlParams = new URLSearchParams(window.location.search);
@@ -21,21 +25,16 @@ if (!id_buku) {
   form.style.display = "none";
 }
 
+// Ambil data buku dan isi form
 async function fetchBook() {
-  const token = getAdminToken();
   try {
     const res = await fetch(
       `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { credentials: "include" }
     );
 
     if (!res.ok) {
       if (res.status === 401) {
-        sessionStorage.removeItem("adminToken");
         window.location.href = "login.html";
         return;
       }
@@ -63,7 +62,6 @@ async function fetchBook() {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const token = getAdminToken();
 
   const dataBuku = {
     judul: document.getElementById("judul").value.trim(),
@@ -91,8 +89,8 @@ form.addEventListener("submit", async (e) => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify(dataBuku),
       }
     );
@@ -109,14 +107,14 @@ form.addEventListener("submit", async (e) => {
       }, 1500);
     } else {
       message.style.color = "red";
-      message.textContent = data.error || "❌ Gagal memperbarui buku";
+      message.textContent = data.error || " Gagal memperbarui buku";
     }
   } catch (err) {
     console.error(err);
     message.style.color = "red";
-    message.textContent = "❌ Terjadi kesalahan pada server";
+    message.textContent = " Terjadi kesalahan pada server";
   }
 });
 
-// Panggil fungsi saat halaman dimuat
+// Jalankan saat halaman dimuat
 fetchBook();

@@ -1,3 +1,5 @@
+// tambah.js
+
 const form = document.getElementById("tambahForm");
 const message = document.getElementById("message");
 
@@ -12,7 +14,19 @@ const inputGambar = document.getElementById("link_gambar");
 
 let allBooks = [];
 
-// Ambil semua data buku saat halaman dimuat
+// Proteksi session admin
+(async function () {
+  const res = await fetch(
+    "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+    { method: "GET", credentials: "include" }
+  );
+  if (res.status === 401) {
+    window.location.href = "login.html";
+    return;
+  }
+})();
+
+// Ambil semua data buku saat halaman dimuat (untuk validasi judul unik, autofill)
 async function fetchBooks() {
   try {
     const res = await fetch(
@@ -20,7 +34,7 @@ async function fetchBooks() {
       { method: "GET", credentials: "include" }
     );
     if (res.status === 401 || res.status === 403) {
-      window.location.href = '../HomePage.html';
+      window.location.href = "login.html";
       return;
     }
     const data = await res.json();
@@ -105,14 +119,14 @@ form.addEventListener("submit", async (e) => {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(dataBuku),
-        credentials: 'include'
       }
     );
     if (res.status === 401 || res.status === 403) {
-      window.location.href = '../HomePage.html';
+      window.location.href = "login.html";
       return;
     }
 

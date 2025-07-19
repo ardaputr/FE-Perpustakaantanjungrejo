@@ -153,42 +153,48 @@
       <p id="message"></p>
     </div>
 
-    <!-- Script login session-based -->
     <script>
-    // Hapus pengecekan localStorage/sessionStorage, ganti dengan session check di dashboard.html, dst
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value.trim();
+          const message = document.getElementById("message");
+          message.style.color = "#c62828";
+          message.textContent = "";
 
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const message = document.getElementById('message');
-      message.textContent = '';
+          if (!username || !password) {
+            message.textContent = "Username dan password wajib diisi.";
+            return;
+          }
 
-      if (!username || !password) {
-        message.textContent = 'Username dan password wajib diisi.';
-        return;
-      }
-
-      try {
-        const res = await fetch('http://localhost:5000/admin/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include', // Penting agar cookie session dikirim
-          body: JSON.stringify({ username, password })
+          try {
+            const res = await fetch(
+              "https://be-perpustakaantanjungrejo.vercel.app/admin/login",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include", // Penting untuk session-based auth
+                body: JSON.stringify({ username, password }),
+              }
+            );
+            const data = await res.json();
+            if (res.ok) {
+              message.style.color = "#388e3c";
+              message.textContent = "Login berhasil, mengalihkan...";
+              setTimeout(() => {
+                window.location.href = "dashboard.html";
+              }, 400);
+            } else {
+              message.textContent = data.error || "Login gagal.";
+            }
+          } catch (err) {
+            message.textContent = "Terjadi kesalahan koneksi.";
+          }
         });
-
-        const data = await res.json();
-
-        if (res.ok) {
-          window.location.href = 'dashboard.html';
-        } else {
-          message.textContent = data.message || 'Login gagal.';
-        }
-      } catch (err) {
-        message.textContent = 'Terjadi kesalahan koneksi.';
-      }
-    });
     </script>
+
     <footer>
       <img src="logo1.png" alt="Logo 1" />
       <span>KKN AA.83.095 DAN KKN AA.83.096</span>

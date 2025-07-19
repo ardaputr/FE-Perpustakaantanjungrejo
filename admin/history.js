@@ -1,4 +1,18 @@
+// history.js
+
 const tableBody = document.getElementById("historyTableBody");
+
+// PROTEKSI SESSION ADMIN
+(async function () {
+  const res = await fetch(
+    "https://be-perpustakaantanjungrejo.vercel.app/admin/history",
+    { method: "GET", credentials: "include" }
+  );
+  if (res.status === 401) {
+    window.location.href = "login.html";
+    return;
+  }
+})();
 
 // Fungsi untuk render history
 function renderHistory(data) {
@@ -19,8 +33,8 @@ function renderHistory(data) {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>
-        <img src="${item.link_gambar}" alt="cover" class="book-img" 
-             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjVmNWRjIi8+CjxwYXRoIGQ9Ik02MCA2MEgxNDBWMTQwSDYwVjYwWiIgZmlsbD0iIzFhMjM3ZSIvPgo8dGV4dCB4PSIxMDAiIHk9IjExMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCI+8J+TmjwvdGV4dD4KPC9zdmc+'" />
+        <img src="${item.link_gambar}" alt="cover" class="book-img"
+             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjVmNWRjIi8+CjxwYXRoIGQ9Ik02MCA2MEgxNDBWMTQwSDYwVjYwWiIgZmlsbD0iIzFhMjM3ZSIvPgo8dGV4dCB4PSIxMDAiIHk9IjExMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCI+8J+TmjwvdGV4dD4KPC9zdmc='" />
       </td>
       <td>${item.judul || "-"}</td>
       <td>${item.nama_peminjam || "-"}</td>
@@ -42,6 +56,31 @@ function renderHistory(data) {
   });
 }
 
+// Fungsi untuk fetch dan tampilkan history
+async function fetchHistory() {
+  try {
+    const res = await fetch(
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/history",
+      { method: "GET", credentials: "include" }
+    );
+    if (res.status === 401 || res.status === 403) {
+      window.location.href = "login.html";
+      return;
+    }
+    const data = await res.json();
+    renderHistory(data);
+  } catch (err) {
+    console.error("Gagal mengambil data riwayat:", err);
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="8" class="error">
+          ❌ Gagal mengambil riwayat peminjaman. Silakan coba lagi nanti.
+        </td>
+      </tr>
+    `;
+  }
+}
+
 // Fungsi untuk mengembalikan buku
 async function kembalikan(id) {
   if (confirm("Yakin ingin mengembalikan buku ini?")) {
@@ -50,11 +89,11 @@ async function kembalikan(id) {
         `https://be-perpustakaantanjungrejo.vercel.app/admin/history/${id}`,
         {
           method: "PUT",
-          credentials: 'include'
+          credentials: "include",
         }
       );
       if (res.status === 401 || res.status === 403) {
-        window.location.href = '../HomePage.html';
+        window.location.href = "login.html";
         return;
       }
       const data = await res.json();
