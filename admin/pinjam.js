@@ -11,7 +11,7 @@ document.getElementById("tanggal_pinjam").valueAsDate = new Date();
 async function loadBook() {
   try {
     const res = await fetch(
-      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`
+      `https://be-perpustakaantanjungrejo.vercel.app/books/${id_buku}`
     );
     const data = await res.json();
 
@@ -76,6 +76,5 @@ form.addEventListener("submit", async (e) => {
     message.textContent = "Terjadi kesalahan pada server.";
   }
 });
-
 
 loadBook();
