@@ -84,10 +84,6 @@ function renderHistory(data) {
       <td>${item.tanggal_pengembalian || "-"}</td>
       <td>${item.status || "-"}</td>
       <td>
-        <img src="${item.link_gambar || ""}" alt="cover" class="book-img"
-          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZjVmNWRjIi8+PHRleHQgeD0iMTUiIHk9IjIwIiBmaWxsPSIjY2NjIiBmb250LXNpemU9IjEwIj7wn5ObPC90ZXh0Pjwvc3ZnPg=='" />
-      </td>
-      <td>
         ${
           item.status === "Dipinjam"
             ? `<button onclick="kembalikan(${item.id_peminjaman})">Kembalikan</button>`
