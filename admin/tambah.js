@@ -15,7 +15,9 @@ let allBooks = [];
 // Ambil semua data buku saat halaman dimuat
 async function fetchBooks() {
   try {
-    const res = await fetch("https://be-perpustakaantanjungrejo.vercel.app/admin/books");
+    const res = await fetch(
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/books"
+    );
     const data = await res.json();
     if (res.ok) {
       allBooks = data;
@@ -30,7 +32,9 @@ async function fetchBooks() {
 // Isi otomatis jika judul sudah ada
 inputJudul.addEventListener("input", () => {
   const inputValue = inputJudul.value.trim().toLowerCase();
-  const match = allBooks.find(book => book.judul.toLowerCase() === inputValue);
+  const match = allBooks.find(
+    (book) => book.judul.toLowerCase() === inputValue
+  );
 
   if (match) {
     inputPenulis.value = match.penulis;
@@ -38,7 +42,7 @@ inputJudul.addEventListener("input", () => {
     inputTahun.value = match.tahun_terbit;
     inputHalaman.value = match.jumlah_halaman;
     inputKategori.value = match.kategori;
-    inputGambar.value = match.link_gambar || '';
+    inputGambar.value = match.link_gambar || "";
     message.style.color = "orange";
     message.textContent = "Judul sudah ada. Anda hanya dapat menambah stok.";
   } else {
@@ -68,22 +72,26 @@ form.addEventListener("submit", async (e) => {
 
   // Cek apakah buku sudah ada berdasarkan judul
   const existingBook = allBooks.find(
-    book => book.judul.toLowerCase() === dataBuku.judul.toLowerCase()
+    (book) => book.judul.toLowerCase() === dataBuku.judul.toLowerCase()
   );
 
   if (existingBook) {
     // Jika ada → tampilkan pesan error, tidak boleh tambah stok dari sini
     message.style.color = "red";
-    message.textContent = "Judul sudah ada. Silakan edit buku dari dashboard untuk menambah stok.";
+    message.textContent =
+      "Judul sudah ada. Silakan edit buku dari dashboard untuk menambah stok.";
     return;
   } else {
     // Jika tidak ada → tambah buku baru
     try {
-      const res = await fetch("https://be-perpustakaantanjungrejo.vercel.app/admin/books", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataBuku),
-      });
+      const res = await fetch(
+        "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataBuku),
+        }
+      );
 
       const result = await res.json();
       if (res.ok) {

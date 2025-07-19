@@ -8,7 +8,7 @@ const id_buku = urlParams.get("id");
 async function fetchBook() {
   try {
     const res = await fetch(
-      `https://be-perpustakaantanjungrejo.vercel.app/books/${id_buku}`
+      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`
     );
     const data = await res.json();
 
@@ -49,7 +49,7 @@ form.addEventListener("submit", async (e) => {
 
   try {
     const res = await fetch(
-      `https://be-perpustakaantanjungrejo.vercel.app/books/${id_buku}`,
+      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
