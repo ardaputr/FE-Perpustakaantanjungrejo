@@ -1,12 +1,9 @@
-// history.js
-
 const hasToken = sessionStorage.getItem("adminToken");
 if (!hasToken) {
   window.location.href = "login.html";
   return;
 }
 
-// Dan saat ada error 401, tambahkan:
 if (res.status === 401 || res.status === 403) {
   sessionStorage.clear();
   window.location.href = "login.html";
@@ -15,7 +12,6 @@ if (res.status === 401 || res.status === 403) {
 
 const tableBody = document.getElementById("historyTableBody");
 
-// PROTEKSI SESSION ADMIN
 (async function () {
   const res = await fetch(
     "https://be-perpustakaantanjungrejo.vercel.app/admin/history",
@@ -27,7 +23,6 @@ const tableBody = document.getElementById("historyTableBody");
   }
 })();
 
-// Fungsi untuk render history
 function renderHistory(data) {
   tableBody.innerHTML = "";
 
@@ -69,7 +64,6 @@ function renderHistory(data) {
   });
 }
 
-// Fungsi untuk fetch dan tampilkan history
 async function fetchHistory() {
   try {
     const res = await fetch(
@@ -87,14 +81,13 @@ async function fetchHistory() {
     tableBody.innerHTML = `
       <tr>
         <td colspan="8" class="error">
-          ❌ Gagal mengambil riwayat peminjaman. Silakan coba lagi nanti.
+          Gagal mengambil riwayat peminjaman. Silakan coba lagi nanti.
         </td>
       </tr>
     `;
   }
 }
 
-// Fungsi untuk mengembalikan buku
 async function kembalikan(id) {
   if (confirm("Yakin ingin mengembalikan buku ini?")) {
     try {
@@ -111,17 +104,16 @@ async function kembalikan(id) {
       }
       const data = await res.json();
       if (res.ok) {
-        alert("✅ Buku berhasil dikembalikan.");
+        alert("Buku berhasil dikembalikan.");
         fetchHistory();
       } else {
         alert("❌ " + (data.error || "Gagal mengembalikan buku."));
       }
     } catch (err) {
       console.error(err);
-      alert("❌ Terjadi kesalahan pada server.");
+      alert("Terjadi kesalahan pada server.");
     }
   }
 }
 
-// Panggil fungsi saat halaman dimuat
 document.addEventListener("DOMContentLoaded", fetchHistory);

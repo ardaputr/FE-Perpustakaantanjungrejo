@@ -1,10 +1,7 @@
-// dashboard.js - Script yang diperbaiki
-
 const tableBody = document.getElementById("booksTableBody");
 let allBooks = [];
 let kategoriList = [];
 
-// Fungsi untuk memeriksa session dengan retry
 async function checkSession(retryCount = 0) {
   try {
     const res = await fetch(
@@ -19,14 +16,12 @@ async function checkSession(retryCount = 0) {
     );
 
     if (res.status === 401) {
-      // Jika gagal dan masih ada retry, coba lagi setelah delay
       if (retryCount < 2) {
         console.log(`Session check failed, retrying... (${retryCount + 1}/2)`);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         return checkSession(retryCount + 1);
       }
 
-      // Hapus session storage dan redirect
       sessionStorage.removeItem("adminToken");
       sessionStorage.removeItem("adminData");
       window.location.href = "login.html";
@@ -60,7 +55,6 @@ async function checkSession(retryCount = 0) {
   }
 })();
 
-// Logout session backend
 async function logout() {
   if (confirm("Yakin ingin logout?")) {
     try {
@@ -75,14 +69,12 @@ async function logout() {
       console.error("Logout error:", err);
     }
 
-    // Hapus session storage
     sessionStorage.removeItem("adminToken");
     sessionStorage.removeItem("adminData");
     window.location.href = "../HomePage.html";
   }
 }
 
-// Statistik kartu di dashboard
 function updateStats(books = allBooks) {
   const totalBooks = books.length;
   const availableBooks = books.filter((book) => book.stok > 0).length;
@@ -95,7 +87,6 @@ function updateStats(books = allBooks) {
   document.getElementById("totalStock").textContent = totalStock;
 }
 
-// Render tabel data buku
 function renderBooks(books) {
   tableBody.innerHTML = "";
   if (!books || books.length === 0) {
@@ -140,7 +131,6 @@ function renderBooks(books) {
   });
 }
 
-// Fetch kategori dengan error handling yang lebih baik
 async function fetchKategori() {
   try {
     const res = await fetch(
@@ -162,7 +152,6 @@ async function fetchKategori() {
   }
 }
 
-// Fetch data buku dengan error handling yang lebih baik
 async function fetchBooks() {
   try {
     const res = await fetch(
@@ -186,7 +175,6 @@ async function fetchBooks() {
   }
 }
 
-// Hapus buku dengan error handling yang lebih baik
 async function hapusBuku(id) {
   if (confirm("Apakah anda yakin ingin menghapus buku ini?")) {
     try {
@@ -205,14 +193,14 @@ async function hapusBuku(id) {
       const data = await res.json();
 
       if (res.ok) {
-        alert("✅ Buku berhasil dihapus.");
+        alert("Buku berhasil dihapus.");
         fetchBooks();
       } else {
         alert("❌ " + (data.error || "Gagal menghapus buku."));
       }
     } catch (err) {
       console.error(err);
-      alert("❌ Terjadi kesalahan pada server.");
+      alert("Terjadi kesalahan pada server.");
     }
   }
 }
@@ -238,12 +226,9 @@ function handleSearch() {
   updateStats(filteredBooks);
 }
 
-// Event listener untuk search input
 document.getElementById("searchInput")?.addEventListener("input", handleSearch);
 
-// Inisialisasi dashboard saat halaman dimuat
 document.addEventListener("DOMContentLoaded", () => {
-  // Tambah delay kecil untuk memastikan session siap
   setTimeout(() => {
     fetchBooks();
   }, 300);

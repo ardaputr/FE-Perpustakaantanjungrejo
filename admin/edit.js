@@ -1,12 +1,9 @@
-// edit.js
-
 const hasToken = sessionStorage.getItem("adminToken");
 if (!hasToken) {
   window.location.href = "login.html";
   return;
 }
 
-// Dan saat ada error 401, tambahkan:
 if (res.status === 401 || res.status === 403) {
   sessionStorage.clear();
   window.location.href = "login.html";
@@ -16,7 +13,6 @@ if (res.status === 401 || res.status === 403) {
 const form = document.getElementById("editForm");
 const message = document.getElementById("message");
 
-// PROTEKSI SESSION ADMIN
 (async function () {
   const res = await fetch(
     "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
@@ -28,7 +24,6 @@ const message = document.getElementById("message");
   }
 })();
 
-// Ambil ID buku dari URL query ?id=...
 const urlParams = new URLSearchParams(window.location.search);
 const id_buku = urlParams.get("id");
 
@@ -38,7 +33,6 @@ if (!id_buku) {
   form.style.display = "none";
 }
 
-// Ambil data buku dan isi form
 async function fetchBook() {
   try {
     const res = await fetch(
@@ -56,7 +50,6 @@ async function fetchBook() {
 
     const data = await res.json();
 
-    // Isi form
     document.getElementById("judul").value = data.judul || "";
     document.getElementById("penulis").value = data.penulis || "";
     document.getElementById("penerbit").value = data.penerbit || "";
@@ -88,7 +81,6 @@ form.addEventListener("submit", async (e) => {
     link_gambar: document.getElementById("link_gambar").value.trim(),
   };
 
-  // Validasi data
   if (!dataBuku.judul) {
     message.style.color = "red";
     message.textContent = "Judul buku wajib diisi";
@@ -112,9 +104,8 @@ form.addEventListener("submit", async (e) => {
 
     if (res.ok) {
       message.style.color = "green";
-      message.textContent = "✅ Data buku berhasil diperbarui!";
+      message.textContent = "Data buku berhasil diperbarui!";
 
-      // Redirect ke dashboard setelah 1.5 detik
       setTimeout(() => {
         window.location.href = "dashboard.html";
       }, 1500);
@@ -129,5 +120,4 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Jalankan saat halaman dimuat
 fetchBook();
