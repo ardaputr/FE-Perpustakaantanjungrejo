@@ -1,28 +1,87 @@
-// dashboard.js
+// dashboard.js - Script yang diperbaiki
 
 const tableBody = document.getElementById("booksTableBody");
 let allBooks = [];
 let kategoriList = [];
 
-// Proteksi halaman admin: redirect ke login jika tidak login
+// Fungsi untuk memeriksa session dengan retry
+async function checkSession(retryCount = 0) {
+  try {
+    const res = await fetch(
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      }
+    );
+
+    if (res.status === 401) {
+      // Jika gagal dan masih ada retry, coba lagi setelah delay
+      if (retryCount < 2) {
+        console.log(`Session check failed, retrying... (${retryCount + 1}/2)`);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return checkSession(retryCount + 1);
+      }
+
+      // Hapus session storage dan redirect
+      sessionStorage.removeItem("adminToken");
+      sessionStorage.removeItem("adminData");
+      window.location.href = "login.html";
+      return false;
+    }
+
+    return res.ok;
+  } catch (err) {
+    console.error("Session check error:", err);
+    if (retryCount < 2) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return checkSession(retryCount + 1);
+    }
+    window.location.href = "login.html";
+    return false;
+  }
+}
+
+// Proteksi halaman admin dengan penanganan yang lebih baik
 (async function () {
-  const res = await fetch(
-    "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
-    { method: "GET", credentials: "include" }
-  );
-  if (res.status === 401) {
+  // Cek sessionStorage dulu sebagai indikator cepat
+  const hasToken = sessionStorage.getItem("adminToken");
+  if (!hasToken) {
+    // Jika tidak ada token di sessionStorage, langsung redirect
     window.location.href = "login.html";
     return;
+  }
+
+  // Tunggu sebentar untuk memastikan session backend siap
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  const sessionValid = await checkSession();
+  if (!sessionValid) {
+    return; // checkSession sudah handle redirect
   }
 })();
 
 // Logout session backend
 async function logout() {
   if (confirm("Yakin ingin logout?")) {
-    await fetch("https://be-perpustakaantanjungrejo.vercel.app/admin/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      await fetch(
+        "https://be-perpustakaantanjungrejo.vercel.app/admin/logout",
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+
+    // Hapus session storage
+    sessionStorage.removeItem("adminToken");
+    sessionStorage.removeItem("adminData");
     window.location.href = "../HomePage.html";
   }
 }
@@ -85,7 +144,7 @@ function renderBooks(books) {
   });
 }
 
-// Fetch kategori (optional, tidak wajib di dashboard)
+// Fetch kategori dengan error handling yang lebih baik
 async function fetchKategori() {
   try {
     const res = await fetch(
@@ -93,7 +152,8 @@ async function fetchKategori() {
       { credentials: "include" }
     );
     if (res.status === 401 || res.status === 403) {
-      window.location.href = "../HomePage.html";
+      sessionStorage.clear();
+      window.location.href = "login.html";
       return;
     }
     if (!res.ok) throw new Error("No endpoint");
@@ -104,10 +164,9 @@ async function fetchKategori() {
       Boolean
     );
   }
-  // jika ada select kategori, render opsi di sini
 }
 
-// Fetch data buku
+// Fetch data buku dengan error handling yang lebih baik
 async function fetchBooks() {
   try {
     const res = await fetch(
@@ -115,12 +174,13 @@ async function fetchBooks() {
       { method: "GET", credentials: "include" }
     );
     if (res.status === 401 || res.status === 403) {
+      sessionStorage.clear();
       window.location.href = "login.html";
       return;
     }
     const data = await res.json();
     allBooks = data;
-    await fetchKategori(); // jika butuh dropdown kategori
+    await fetchKategori();
     renderBooks(allBooks);
     updateStats(allBooks);
   } catch (err) {
@@ -130,7 +190,7 @@ async function fetchBooks() {
   }
 }
 
-// Hapus buku
+// Hapus buku dengan error handling yang lebih baik
 async function hapusBuku(id) {
   if (confirm("Apakah anda yakin ingin menghapus buku ini?")) {
     try {
@@ -142,6 +202,7 @@ async function hapusBuku(id) {
         }
       );
       if (res.status === 401 || res.status === 403) {
+        sessionStorage.clear();
         window.location.href = "login.html";
         return;
       }
@@ -149,7 +210,7 @@ async function hapusBuku(id) {
 
       if (res.ok) {
         alert("✅ Buku berhasil dihapus.");
-        fetchBooks(); // refresh tabel
+        fetchBooks();
       } else {
         alert("❌ " + (data.error || "Gagal menghapus buku."));
       }
@@ -182,9 +243,12 @@ function handleSearch() {
 }
 
 // Event listener untuk search input
-document.getElementById("searchInput").addEventListener("input", handleSearch);
+document.getElementById("searchInput")?.addEventListener("input", handleSearch);
 
 // Inisialisasi dashboard saat halaman dimuat
 document.addEventListener("DOMContentLoaded", () => {
-  fetchBooks();
+  // Tambah delay kecil untuk memastikan session siap
+  setTimeout(() => {
+    fetchBooks();
+  }, 300);
 });
