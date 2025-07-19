@@ -3,8 +3,13 @@ const tableBody = document.getElementById("historyTableBody");
 async function fetchHistory() {
   try {
     const res = await fetch(
-      "https://be-perpustakaantanjungrejo.vercel.app/admin/history"
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/history",
+      { credentials: 'include' }
     );
+    if (res.status === 401 || res.status === 403) {
+      window.location.href = '../HomePage.html';
+      return;
+    }
     const data = await res.json();
 
     tableBody.innerHTML = "";
@@ -47,8 +52,13 @@ async function kembalikan(id) {
         `https://be-perpustakaantanjungrejo.vercel.app/admin/history/${id}`,
         {
           method: "PUT",
+          credentials: 'include'
         }
       );
+      if (res.status === 401 || res.status === 403) {
+        window.location.href = '../HomePage.html';
+        return;
+      }
       const data = await res.json();
       if (res.ok) {
         alert("Buku berhasil dikembalikan.");

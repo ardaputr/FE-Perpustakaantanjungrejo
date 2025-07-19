@@ -153,16 +153,42 @@
       <p id="message"></p>
     </div>
 
+    <!-- Script login session-based -->
     <script>
-      // Jika sudah login, redirect ke dashboard
-      if (
-        localStorage.getItem("adminToken") ||
-        sessionStorage.getItem("adminToken")
-      ) {
-        window.location.href = "dashboard.html";
+    // Hapus pengecekan localStorage/sessionStorage, ganti dengan session check di dashboard.html, dst
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const message = document.getElementById('message');
+      message.textContent = '';
+
+      if (!username || !password) {
+        message.textContent = 'Username dan password wajib diisi.';
+        return;
       }
+
+      try {
+        const res = await fetch('http://localhost:5000/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include', // Penting agar cookie session dikirim
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          window.location.href = 'dashboard.html';
+        } else {
+          message.textContent = data.message || 'Login gagal.';
+        }
+      } catch (err) {
+        message.textContent = 'Terjadi kesalahan koneksi.';
+      }
+    });
     </script>
-    <script src="script.js"></script>
     <footer>
       <img src="logo1.png" alt="Logo 1" />
       <span>KKN AA.83.095 DAN KKN AA.83.096</span>

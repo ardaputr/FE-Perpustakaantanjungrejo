@@ -15,9 +15,11 @@ let allBooks = [];
 // Ambil semua data buku saat halaman dimuat
 async function fetchBooks() {
   try {
-    const res = await fetch(
-      "https://be-perpustakaantanjungrejo.vercel.app/admin/books"
-    );
+    const res = await fetch("https://be-perpustakaantanjungrejo.vercel.app/admin/books", { credentials: 'include' });
+    if (res.status === 401 || res.status === 403) {
+      window.location.href = '../HomePage.html';
+      return;
+    }
     const data = await res.json();
     if (res.ok) {
       allBooks = data;
@@ -78,20 +80,21 @@ form.addEventListener("submit", async (e) => {
   if (existingBook) {
     // Jika ada → tampilkan pesan error, tidak boleh tambah stok dari sini
     message.style.color = "red";
-    message.textContent =
-      "Judul sudah ada. Silakan edit buku dari dashboard untuk menambah stok.";
+    message.textContent = "Judul sudah ada. Silakan edit buku dari dashboard untuk menambah stok.";
     return;
   } else {
     // Jika tidak ada → tambah buku baru
     try {
-      const res = await fetch(
-        "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dataBuku),
-        }
-      );
+      const res = await fetch("https://be-perpustakaantanjungrejo.vercel.app/admin/books", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataBuku),
+        credentials: 'include'
+      });
+      if (res.status === 401 || res.status === 403) {
+        window.location.href = '../HomePage.html';
+        return;
+      }
 
       const result = await res.json();
       if (res.ok) {

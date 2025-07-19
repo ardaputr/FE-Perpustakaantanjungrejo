@@ -560,9 +560,11 @@
       async function fetchKategori() {
         // Coba ambil dari endpoint, jika gagal generate dari data buku
         try {
-          const res = await fetch(
-            "https://be-perpustakaantanjungrejo.vercel.app/admin/categories"
-          );
+          const res = await fetch("https://be-perpustakaantanjungrejo.vercel.app/admin/categories", { credentials: 'include' });
+          if (res.status === 401 || res.status === 403) {
+            window.location.href = '../HomePage.html';
+            return;
+          }
           if (!res.ok) throw new Error("No endpoint");
           const data = await res.json();
           kategoriList = data.map((kat) => kat.nama_kategori);
@@ -601,8 +603,13 @@
       async function fetchBooks() {
         try {
           const res = await fetch(
-            "https://be-perpustakaantanjungrejo.vercel.app/admin/books"
+            "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+            { credentials: 'include' }
           );
+          if (res.status === 401 || res.status === 403) {
+            window.location.href = '../HomePage.html';
+            return;
+          }
           const data = await res.json();
 
           allBooks = data;
@@ -623,8 +630,13 @@
               `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id}`,
               {
                 method: "DELETE",
+                credentials: 'include'
               }
             );
+            if (res.status === 401 || res.status === 403) {
+              window.location.href = '../HomePage.html';
+              return;
+            }
             const data = await res.json();
 
             if (res.ok) {
