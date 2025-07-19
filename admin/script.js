@@ -1,6 +1,3 @@
-const form = document.getElementById("loginForm");
-const message = document.getElementById("message");
-
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -20,20 +17,17 @@ form.addEventListener("submit", async (e) => {
     const data = await res.json();
 
     if (res.ok) {
-      message.style.color = "green";
-      message.textContent = data.message;
+      // Simpan token dan data admin
+      sessionStorage.setItem("adminToken", data.token || data.admin?.username);
+      sessionStorage.setItem("adminData", JSON.stringify(data.admin || {}));
 
       // redirect ke dashboard
-      setTimeout(() => {
-        window.location.href = "dashboard.html";
-      }, 1000);
+      window.location.href = "dashboard.html";
     } else {
-      message.style.color = "red";
-      message.textContent = data.error;
+      throw new Error(data.error || "Login gagal");
     }
   } catch (err) {
-    console.error(err);
     message.style.color = "red";
-    message.textContent = "Terjadi kesalahan pada server.";
+    message.textContent = err.message;
   }
 });

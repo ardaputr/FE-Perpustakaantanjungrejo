@@ -1,39 +1,69 @@
 const form = document.getElementById("editForm");
 const message = document.getElementById("message");
 
+// Fungsi untuk mendapatkan token admin
+function getAdminToken() {
+  return sessionStorage.getItem("adminToken");
+}
+
+// Cek login status
+if (!getAdminToken()) {
+  window.location.href = "login.html";
+}
+
 // Ambil ID buku dari URL query ?id=...
 const urlParams = new URLSearchParams(window.location.search);
 const id_buku = urlParams.get("id");
 
+if (!id_buku) {
+  message.style.color = "red";
+  message.textContent = "ID buku tidak valid";
+  form.style.display = "none";
+}
+
 async function fetchBook() {
+  const token = getAdminToken();
   try {
     const res = await fetch(
-      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`
+      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
-    const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.error || "Gagal mengambil data buku.");
+      if (res.status === 401) {
+        sessionStorage.removeItem("adminToken");
+        window.location.href = "login.html";
+        return;
+      }
+      throw new Error(`HTTP error! status: ${res.status}`);
     }
 
+    const data = await res.json();
+
     // Isi form
-    document.getElementById("judul").value = data.judul;
-    document.getElementById("penulis").value = data.penulis;
-    document.getElementById("penerbit").value = data.penerbit;
-    document.getElementById("tahun_terbit").value = data.tahun_terbit;
-    document.getElementById("jumlah_halaman").value = data.jumlah_halaman;
-    document.getElementById("kategori").value = data.kategori;
-    document.getElementById("stok").value = data.stok;
-    document.getElementById("link_gambar").value = data.link_gambar;
+    document.getElementById("judul").value = data.judul || "";
+    document.getElementById("penulis").value = data.penulis || "";
+    document.getElementById("penerbit").value = data.penerbit || "";
+    document.getElementById("tahun_terbit").value = data.tahun_terbit || "";
+    document.getElementById("jumlah_halaman").value = data.jumlah_halaman || "";
+    document.getElementById("kategori").value = data.kategori || "";
+    document.getElementById("stok").value = data.stok || "";
+    document.getElementById("link_gambar").value = data.link_gambar || "";
   } catch (err) {
     console.error(err);
     message.style.color = "red";
-    message.textContent = err.message;
+    message.textContent = err.message || "Gagal mengambil data buku";
+    form.style.display = "none";
   }
 }
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  const token = getAdminToken();
 
   const dataBuku = {
     judul: document.getElementById("judul").value.trim(),
@@ -47,12 +77,22 @@ form.addEventListener("submit", async (e) => {
     link_gambar: document.getElementById("link_gambar").value.trim(),
   };
 
+  // Validasi data
+  if (!dataBuku.judul) {
+    message.style.color = "red";
+    message.textContent = "Judul buku wajib diisi";
+    return;
+  }
+
   try {
     const res = await fetch(
       `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`,
       {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(dataBuku),
       }
     );
@@ -61,16 +101,22 @@ form.addEventListener("submit", async (e) => {
 
     if (res.ok) {
       message.style.color = "green";
-      message.textContent = "Data buku berhasil diperbarui!";
+      message.textContent = "✅ Data buku berhasil diperbarui!";
+
+      // Redirect ke dashboard setelah 1.5 detik
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1500);
     } else {
       message.style.color = "red";
-      message.textContent = data.error || "Gagal memperbarui buku.";
+      message.textContent = data.error || "❌ Gagal memperbarui buku";
     }
   } catch (err) {
     console.error(err);
     message.style.color = "red";
-    message.textContent = "Terjadi kesalahan pada server.";
+    message.textContent = "❌ Terjadi kesalahan pada server";
   }
 });
 
+// Panggil fungsi saat halaman dimuat
 fetchBook();
