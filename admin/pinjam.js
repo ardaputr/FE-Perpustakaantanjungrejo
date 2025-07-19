@@ -1,30 +1,6 @@
-const hasToken = sessionStorage.getItem("adminToken");
-if (!hasToken) {
-  window.location.href = "login.html";
-  return;
-}
-
-if (res.status === 401 || res.status === 403) {
-  sessionStorage.clear();
-  window.location.href = "login.html";
-  return;
-}
-
 const form = document.getElementById("pinjamForm");
 const message = document.getElementById("message");
 const bookDetailDiv = document.getElementById("bookDetail");
-
-(async function () {
-  const res = await fetch(
-    "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
-    { method: "GET", credentials: "include" }
-  );
-  if (res.status === 401) {
-    window.location.href = "login.html";
-    return;
-  }
-})();
-
 const urlParams = new URLSearchParams(window.location.search);
 const id_buku = urlParams.get("id");
 
@@ -34,7 +10,21 @@ if (!id_buku) {
   form.style.display = "none";
 }
 
-document.getElementById("tanggal_pinjam").valueAsDate = new Date();
+async function requireAdminSession() {
+  const res = await fetch(
+    "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+    { method: "GET", credentials: "include" }
+  );
+  if (res.status === 401 || res.status === 403) {
+    window.location.href = "login.html";
+    throw new Error("Unauthorized");
+  }
+}
+
+(async function () {
+  await requireAdminSession();
+  loadBook();
+})();
 
 async function loadBook() {
   try {

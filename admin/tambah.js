@@ -1,38 +1,20 @@
-const hasToken = sessionStorage.getItem("adminToken");
-if (!hasToken) {
-  window.location.href = "login.html";
-  return;
-}
-
-if (res.status === 401 || res.status === 403) {
-  sessionStorage.clear();
-  window.location.href = "login.html";
-  return;
-}
-
 const form = document.getElementById("tambahForm");
 const message = document.getElementById("message");
 
-const inputJudul = document.getElementById("judul");
-const inputPenulis = document.getElementById("penulis");
-const inputPenerbit = document.getElementById("penerbit");
-const inputTahun = document.getElementById("tahun_terbit");
-const inputHalaman = document.getElementById("jumlah_halaman");
-const inputKategori = document.getElementById("kategori");
-const inputStok = document.getElementById("stok");
-const inputGambar = document.getElementById("link_gambar");
-
-let allBooks = [];
-
-(async function () {
+async function requireAdminSession() {
   const res = await fetch(
     "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
     { method: "GET", credentials: "include" }
   );
-  if (res.status === 401) {
+  if (res.status === 401 || res.status === 403) {
     window.location.href = "login.html";
-    return;
+    throw new Error("Unauthorized");
   }
+}
+
+(async function () {
+  await requireAdminSession();
+  fetchBooks();
 })();
 
 async function fetchBooks() {
@@ -159,5 +141,4 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Jalankan saat halaman dimuat
 document.addEventListener("DOMContentLoaded", fetchBooks);

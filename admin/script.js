@@ -28,14 +28,6 @@ document
       if (res.ok) {
         message.style.color = "#388e3c";
         message.textContent = "Login berhasil, mengalihkan...";
-
-        if (data.token) {
-          sessionStorage.setItem("adminToken", data.token);
-        }
-        if (data.admin) {
-          sessionStorage.setItem("adminData", JSON.stringify(data.admin));
-        }
-
         setTimeout(() => {
           window.location.href = "dashboard.html";
         }, 800);
