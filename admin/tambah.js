@@ -26,7 +26,7 @@ let allBooks = [];
   }
 })();
 
-// Ambil semua data buku saat halaman dimuat (untuk validasi judul unik, autofill)
+// Ambil semua data buku
 async function fetchBooks() {
   try {
     const res = await fetch(
