@@ -62,7 +62,7 @@ async function loadBook() {
     if (data.stok <= 0) {
       form.style.display = "none";
       message.style.color = "red";
-      message.textContent = "❌ Stok habis. Tidak bisa dipinjam.";
+      message.textContent = "Stok habis. Tidak bisa dipinjam.";
     }
   } catch (err) {
     console.error(err);
@@ -110,21 +110,20 @@ form.addEventListener("submit", async (e) => {
 
     if (res.ok) {
       message.style.color = "green";
-      message.textContent = "✅ Peminjaman berhasil dicatat!";
+      message.textContent = "Peminjaman berhasil dicatat!";
       form.reset();
 
-      // Arahkan ke dashboard setelah 1.5 detik
       setTimeout(() => {
         window.location.href = "dashboard.html";
       }, 1500);
     } else {
       message.style.color = "red";
-      message.textContent = data.error || "❌ Gagal meminjam buku";
+      message.textContent = data.error || "Gagal meminjam buku";
     }
   } catch (err) {
     console.error(err);
     message.style.color = "red";
-    message.textContent = "❌ Terjadi kesalahan pada server";
+    message.textContent = "Terjadi kesalahan pada server";
   }
 });
 
