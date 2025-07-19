@@ -3,7 +3,11 @@ const tableBody = document.getElementById("historyTableBody");
 async function fetchHistory() {
   try {
     const res = await fetch(
-      "https://be-perpustakaantanjungrejo.vercel.app/admin/history"
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/history",
+      {
+        method: "GET",
+        credentials: "include",
+      }
     );
     const data = await res.json();
 
@@ -47,6 +51,7 @@ async function kembalikan(id) {
         `https://be-perpustakaantanjungrejo.vercel.app/admin/history/${id}`,
         {
           method: "PUT",
+          credentials: "include",
         }
       );
       const data = await res.json();

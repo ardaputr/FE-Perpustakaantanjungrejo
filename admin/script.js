@@ -12,6 +12,7 @@ form.addEventListener("submit", async (e) => {
       "https://be-perpustakaantanjungrejo.vercel.app/admin/login",
       {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       }

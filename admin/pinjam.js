@@ -11,7 +11,11 @@ document.getElementById("tanggal_pinjam").valueAsDate = new Date();
 async function loadBook() {
   try {
     const res = await fetch(
-      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`
+      `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
     );
     const data = await res.json();
 
@@ -50,6 +54,7 @@ form.addEventListener("submit", async (e) => {
       "https://be-perpustakaantanjungrejo.vercel.app/admin/pinjam",
       {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(peminjaman),
       }

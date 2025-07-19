@@ -16,7 +16,11 @@ let allBooks = [];
 async function fetchBooks() {
   try {
     const res = await fetch(
-      "https://be-perpustakaantanjungrejo.vercel.app/admin/books"
+      "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+      {
+        method: "GET",
+        credentials: "include",
+      }
     );
     const data = await res.json();
     if (res.ok) {
@@ -88,6 +92,7 @@ form.addEventListener("submit", async (e) => {
         "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
         {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(dataBuku),
         }

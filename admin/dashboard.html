@@ -513,7 +513,7 @@
                     <td>
                         <img src="${
                           buku.link_gambar
-                        }" alt="cover" class="book-img" 
+                        }" alt="cover" class="book-img"
                              onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjVmNWRjIi8+CjxwYXRoIGQ9Ik02MCA2MEgxNDBWMTQwSDYwVjYwWiIgZmlsbD0iIzFhMjM3ZSIvPgo8dGV4dCB4PSIxMDAiIHk9IjExMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCI+8J+TmjwvdGV4dD4KPC9zdmc+'" />
                     </td>
                     <td class="book-title">${buku.judul ? buku.judul : "-"}</td>
@@ -601,7 +601,11 @@
       async function fetchBooks() {
         try {
           const res = await fetch(
-            "https://be-perpustakaantanjungrejo.vercel.app/admin/books"
+            "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
+            {
+              method: "GET",
+              credentials: "include",
+            }
           );
           const data = await res.json();
 
