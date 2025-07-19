@@ -1,12 +1,9 @@
-// pinjam.js
-
 const hasToken = sessionStorage.getItem("adminToken");
 if (!hasToken) {
   window.location.href = "login.html";
   return;
 }
 
-// Dan saat ada error 401, tambahkan:
 if (res.status === 401 || res.status === 403) {
   sessionStorage.clear();
   window.location.href = "login.html";
@@ -17,7 +14,6 @@ const form = document.getElementById("pinjamForm");
 const message = document.getElementById("message");
 const bookDetailDiv = document.getElementById("bookDetail");
 
-// Proteksi session admin
 (async function () {
   const res = await fetch(
     "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
@@ -29,7 +25,6 @@ const bookDetailDiv = document.getElementById("bookDetail");
   }
 })();
 
-// Ambil ID buku dari URL query ?id=...
 const urlParams = new URLSearchParams(window.location.search);
 const id_buku = urlParams.get("id");
 
@@ -39,7 +34,6 @@ if (!id_buku) {
   form.style.display = "none";
 }
 
-// Default tanggal hari ini
 document.getElementById("tanggal_pinjam").valueAsDate = new Date();
 
 async function loadBook() {
@@ -89,7 +83,6 @@ form.addEventListener("submit", async (e) => {
     tanggal_peminjaman: document.getElementById("tanggal_pinjam").value,
   };
 
-  // Validasi data
   if (!peminjaman.nama_peminjam) {
     message.style.color = "red";
     message.textContent = "Nama peminjam wajib diisi";
@@ -135,5 +128,4 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Jalankan saat halaman dimuat
 loadBook();

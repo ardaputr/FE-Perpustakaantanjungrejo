@@ -1,12 +1,9 @@
-// tambah.js
-
 const hasToken = sessionStorage.getItem("adminToken");
 if (!hasToken) {
   window.location.href = "login.html";
   return;
 }
 
-// Dan saat ada error 401, tambahkan:
 if (res.status === 401 || res.status === 403) {
   sessionStorage.clear();
   window.location.href = "login.html";
@@ -27,7 +24,6 @@ const inputGambar = document.getElementById("link_gambar");
 
 let allBooks = [];
 
-// Proteksi session admin
 (async function () {
   const res = await fetch(
     "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
@@ -39,7 +35,6 @@ let allBooks = [];
   }
 })();
 
-// Ambil semua data buku
 async function fetchBooks() {
   try {
     const res = await fetch(
@@ -59,7 +54,6 @@ async function fetchBooks() {
   }
 }
 
-// Isi otomatis jika judul sudah ada
 inputJudul.addEventListener("input", () => {
   const inputValue = inputJudul.value.trim().toLowerCase();
   const match = allBooks.find(
@@ -100,16 +94,15 @@ form.addEventListener("submit", async (e) => {
     link_gambar: inputGambar.value.trim(),
   };
 
-  // Validasi data
   if (!dataBuku.judul) {
     message.style.color = "red";
-    message.textContent = "❌ Judul buku wajib diisi";
+    message.textContent = "Judul buku wajib diisi";
     return;
   }
 
   if (dataBuku.stok < 0) {
     message.style.color = "red";
-    message.textContent = "❌ Stok tidak boleh negatif";
+    message.textContent = "Stok tidak boleh negatif";
     return;
   }
 
@@ -122,7 +115,7 @@ form.addEventListener("submit", async (e) => {
   if (existingBook) {
     message.style.color = "red";
     message.textContent =
-      "❌ Judul sudah ada. Silakan edit buku dari dashboard untuk menambah stok.";
+      "Judul sudah ada. Silakan edit buku dari dashboard untuk menambah stok.";
     return;
   }
 
@@ -147,7 +140,7 @@ form.addEventListener("submit", async (e) => {
 
     if (res.ok) {
       message.style.color = "green";
-      message.textContent = "✅ Buku berhasil ditambahkan!";
+      message.textContent = "Buku berhasil ditambahkan!";
       form.reset();
       await fetchBooks(); // refresh data
 
@@ -157,12 +150,12 @@ form.addEventListener("submit", async (e) => {
       }, 2000);
     } else {
       message.style.color = "red";
-      message.textContent = result.error || "❌ Gagal menambah buku";
+      message.textContent = result.error || "Gagal menambah buku";
     }
   } catch (err) {
     console.error(err);
     message.style.color = "red";
-    message.textContent = "❌ Terjadi kesalahan pada server";
+    message.textContent = "Terjadi kesalahan pada server";
   }
 });
 

@@ -1,16 +1,3 @@
-// const hasToken = sessionStorage.getItem("adminToken");
-// if (!hasToken) {
-//   window.location.href = "login.html";
-//   return;
-// }
-
-// // Dan saat ada error 401, tambahkan:
-// if (res.status === 401 || res.status === 403) {
-//   sessionStorage.clear();
-//   window.location.href = "login.html";
-//   return;
-// }
-
 document
   .getElementById("loginForm")
   .addEventListener("submit", async function (e) {
@@ -32,7 +19,7 @@ document
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include", // Penting untuk session-based auth
+          credentials: "include",
           body: JSON.stringify({ username, password }),
         }
       );
@@ -42,7 +29,6 @@ document
         message.style.color = "#388e3c";
         message.textContent = "Login berhasil, mengalihkan...";
 
-        // Simpan juga ke sessionStorage sebagai backup
         if (data.token) {
           sessionStorage.setItem("adminToken", data.token);
         }
@@ -50,7 +36,6 @@ document
           sessionStorage.setItem("adminData", JSON.stringify(data.admin));
         }
 
-        // Tunggu sebentar agar session tersimpan di backend
         setTimeout(() => {
           window.location.href = "dashboard.html";
         }, 800);

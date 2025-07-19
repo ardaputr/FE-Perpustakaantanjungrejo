@@ -45,22 +45,18 @@ async function checkSession(retryCount = 0) {
   }
 }
 
-// Proteksi halaman admin dengan penanganan yang lebih baik
 (async function () {
-  // Cek sessionStorage dulu sebagai indikator cepat
   const hasToken = sessionStorage.getItem("adminToken");
   if (!hasToken) {
-    // Jika tidak ada token di sessionStorage, langsung redirect
     window.location.href = "login.html";
     return;
   }
 
-  // Tunggu sebentar untuk memastikan session backend siap
   await new Promise((resolve) => setTimeout(resolve, 500));
 
   const sessionValid = await checkSession();
   if (!sessionValid) {
-    return; // checkSession sudah handle redirect
+    return;
   }
 })();
 
