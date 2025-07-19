@@ -12,7 +12,6 @@ form.addEventListener("submit", async (e) => {
       "https://be-perpustakaantanjungrejo.vercel.app/admin/login",
       {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       }
@@ -21,6 +20,10 @@ form.addEventListener("submit", async (e) => {
     const data = await res.json();
 
     if (res.ok) {
+      // Simpan token dan data admin di sessionStorage
+      sessionStorage.setItem("adminToken", data.admin.username);
+      sessionStorage.setItem("adminData", JSON.stringify(data.admin));
+
       message.style.color = "green";
       message.textContent = data.message;
 

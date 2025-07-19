@@ -1,78 +1,193 @@
 const tableBody = document.getElementById("booksTableBody");
+let allBooks = [];
 
+// Fungsi untuk mendapatkan token admin
+function getAdminToken() {
+  return sessionStorage.getItem("adminToken");
+}
+
+// Fungsi untuk logout
 function logout() {
   if (confirm("Yakin ingin logout?")) {
-    // Hapus session/token jika ada
-    localStorage.removeItem("adminToken");
     sessionStorage.removeItem("adminToken");
-
-    // Redirect ke halaman login
-    window.location.href = "HomePage.html";
+    sessionStorage.removeItem("adminData");
+    window.location.href = "../HomePage.html";
   }
 }
 
+// Fungsi untuk fetch data buku dengan autentikasi
 async function fetchBooks() {
+  const token = getAdminToken();
+  if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
+
   try {
     const res = await fetch(
       "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
       {
-        method: "GET",
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        // Token tidak valid, redirect ke login
+        sessionStorage.removeItem("adminToken");
+        window.location.href = "login.html";
+        return;
+      }
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
     const data = await res.json();
-
-    tableBody.innerHTML = "";
-
-    data.forEach((buku) => {
-      const row = document.createElement("tr");
-
-      row.innerHTML = `
-        <td><img src="${buku.link_gambar}" alt="cover" style="width:80px;"/></td>
-        <td>${buku.judul}</td>
-        <td>${buku.penulis}</td>
-        <td>${buku.penerbit}</td>
-        <td>${buku.tahun_terbit}</td>
-        <td>${buku.stok}</td>
-        <td>
-          <button onclick="window.location.href='edit.html?id=${buku.id_buku}'">Edit</button>
-          <button onclick="hapusBuku(${buku.id_buku})">Hapus</button>
-          <button onclick="window.location.href='pinjam.html?id=${buku.id_buku}'">Pinjam</button>
-        </td>
-      `;
-
-      tableBody.appendChild(row);
-    });
+    allBooks = data;
+    renderBooks(allBooks);
+    updateStats(allBooks);
   } catch (err) {
     console.error("Gagal mengambil data buku:", err);
-    tableBody.innerHTML =
-      '<tr><td colspan="7">Gagal mengambil data buku.</td></tr>';
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="7" class="error">
+          ❌ Gagal mengambil data buku. Silakan coba lagi nanti.
+        </td>
+      </tr>
+    `;
   }
 }
 
+// Fungsi untuk render buku
+function renderBooks(books) {
+  tableBody.innerHTML = "";
+
+  if (!books || books.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="7" class="error">
+          Belum ada data buku.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  books.forEach((buku) => {
+    const row = document.createElement("tr");
+    const stockClass =
+      buku.stok > 0 ? "" : 'style="color: #dc2626; font-weight: 600;"';
+    const stockText = buku.stok > 0 ? buku.stok : "Habis";
+
+    row.innerHTML = `
+      <td>
+        <img src="${buku.link_gambar}" alt="cover" class="book-img" 
+             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjVmNWRjIi8+CjxwYXRoIGQ9Ik02MCA2MEgxNDBWMTQwSDYwVjYwWiIgZmlsbD0iIzFhMjM3ZSIvPgo8dGV4dCB4PSIxMDAiIHk9IjExMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCI+8J+TmjwvdGV4dD4KPC9zdmc+'" />
+      </td>
+      <td class="book-title">${buku.judul || "-"}</td>
+      <td>${buku.penulis || "-"}</td>
+      <td>${buku.penerbit || "-"}</td>
+      <td>${buku.tahun_terbit || "-"}</td>
+      <td ${stockClass}>${stockText}</td>
+      <td>
+        <div class="action-buttons">
+          <button onclick="window.location.href='edit.html?id=${
+            buku.id_buku
+          }'" class="btn-edit">
+            ✏️ Edit
+          </button>
+          <button onclick="hapusBuku(${buku.id_buku})" class="btn-delete">
+            🗑️ Hapus
+          </button>
+          <button onclick="window.location.href='pinjam.html?id=${
+            buku.id_buku
+          }'" class="btn-pinjam" ${buku.stok === 0 ? "disabled" : ""}>
+            📖 Pinjam
+          </button>
+        </div>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
+// Fungsi untuk update statistik
+function updateStats(books = allBooks) {
+  const totalBooks = books.length;
+  const availableBooks = books.filter((book) => book.stok > 0).length;
+  const outOfStock = books.filter((book) => book.stok === 0).length;
+  const totalStock = books.reduce(
+    (sum, book) => sum + parseInt(book.stok || 0),
+    0
+  );
+
+  document.getElementById("totalBooks").textContent = totalBooks;
+  document.getElementById("availableBooks").textContent = availableBooks;
+  document.getElementById("outOfStock").textContent = outOfStock;
+  document.getElementById("totalStock").textContent = totalStock;
+}
+
+// Fungsi untuk menghapus buku
 async function hapusBuku(id) {
   if (confirm("Apakah anda yakin ingin menghapus buku ini?")) {
+    const token = getAdminToken();
+    if (!token) {
+      window.location.href = "login.html";
+      return;
+    }
+
     try {
       const res = await fetch(
         `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id}`,
         {
           method: "DELETE",
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
+
       const data = await res.json();
 
       if (res.ok) {
-        alert("Buku berhasil dihapus.");
+        alert("✅ Buku berhasil dihapus.");
         fetchBooks(); // refresh tabel
       } else {
-        alert(data.error || "Gagal menghapus buku.");
+        alert("❌ " + (data.error || "Gagal menghapus buku."));
       }
     } catch (err) {
       console.error(err);
-      alert("Terjadi kesalahan pada server.");
+      alert("❌ Terjadi kesalahan pada server.");
     }
   }
 }
 
-fetchBooks();
+// Panggil fungsi saat halaman dimuat
+document.addEventListener("DOMContentLoaded", () => {
+  // Cek apakah user sudah login
+  if (!getAdminToken()) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  fetchBooks();
+
+  // Event listener untuk search input
+  document.getElementById("searchInput").addEventListener("input", function () {
+    const searchValue = this.value.trim().toLowerCase();
+    let filteredBooks = allBooks;
+
+    if (searchValue) {
+      filteredBooks = allBooks.filter(
+        (book) =>
+          (book.judul && book.judul.toLowerCase().includes(searchValue)) ||
+          (book.penulis && book.penulis.toLowerCase().includes(searchValue)) ||
+          (book.penerbit && book.penerbit.toLowerCase().includes(searchValue))
+      );
+    }
+
+    renderBooks(filteredBooks);
+    updateStats(filteredBooks);
+  });
+});
