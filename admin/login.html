@@ -162,48 +162,7 @@
         window.location.href = "dashboard.html";
       }
     </script>
-
-    <script>
-      const form = document.getElementById("loginForm");
-      const messageEl = document.getElementById("message");
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
-
-        const response = await fetch(
-          "https://be-perpustakaantanjungrejo.vercel.app/admin/login",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include", // penting untuk session login
-            body: JSON.stringify({ username, password }),
-          }
-        );
-
-        const result = await response.json();
-
-        if (response.ok) {
-          // simpan penanda login di sessionStorage
-          sessionStorage.setItem("adminToken", "logged-in"); // opsional saja, bukan token
-          window.location.href = "dashboard.html";
-        } else {
-          messageEl.textContent = result.error || "Login gagal";
-        }
-      });
-
-      // Cek jika sudah login (opsional)
-      if (sessionStorage.getItem("adminToken")) {
-        window.location.href = "dashboard.html";
-      }
-    </script>
-
     <script src="script.js"></script>
-
     <footer>
       <img src="logo1.png" alt="Logo 1" />
       <span>KKN AA.83.095 DAN KKN AA.83.096</span>
