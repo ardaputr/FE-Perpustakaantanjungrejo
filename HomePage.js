@@ -3,7 +3,7 @@ const cardGrid = document.getElementById("booksCardGrid");
 async function fetchBooks() {
   try {
     const res = await fetch(
-      "https://be-perpustakaantanjungrejo.vercel.app/admin/books"
+      "https://be-perpustakaantanjungrejo.vercel.app/books"
     );
     const data = await res.json();
 
@@ -12,7 +12,8 @@ async function fetchBooks() {
     data.forEach((buku) => {
       const card = document.createElement("div");
       card.className = "book-card";
-      const badgeClass = buku.stok > 0 ? "book-stock-badge" : "book-stock-badge out";
+      const badgeClass =
+        buku.stok > 0 ? "book-stock-badge" : "book-stock-badge out";
       const badgeText = buku.stok > 0 ? `Stok: ${buku.stok}` : "Stok Habis";
       card.innerHTML = `
         <div class="book-img-wrap">
@@ -32,7 +33,8 @@ async function fetchBooks() {
     });
   } catch (err) {
     console.error("Gagal mengambil data buku:", err);
-    cardGrid.innerHTML = '<div style="color:red;text-align:center;">Gagal mengambil data buku.</div>';
+    cardGrid.innerHTML =
+      '<div style="color:red;text-align:center;">Gagal mengambil data buku.</div>';
   }
 }
 

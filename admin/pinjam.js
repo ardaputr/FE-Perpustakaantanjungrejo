@@ -77,5 +77,4 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-
 loadBook();
