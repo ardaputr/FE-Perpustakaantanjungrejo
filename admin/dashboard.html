@@ -601,7 +601,7 @@
       async function fetchBooks() {
         try {
           const res = await fetch(
-            "https://be-perpustakaantanjungrejo.vercel.app/books"
+            "https://be-perpustakaantanjungrejo.vercel.app/admin/books"
           );
           const data = await res.json();
 
@@ -620,7 +620,7 @@
         if (confirm("Apakah anda yakin ingin menghapus buku ini?")) {
           try {
             const res = await fetch(
-              `https://be-perpustakaantanjungrejo.vercel.app/books/${id}`,
+              `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id}`,
               {
                 method: "DELETE",
               }
