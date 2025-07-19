@@ -4,6 +4,10 @@ const bookDetailDiv = document.getElementById("bookDetail");
 const urlParams = new URLSearchParams(window.location.search);
 const id_buku = urlParams.get("id");
 
+function getToken() {
+  return localStorage.getItem("adminToken");
+}
+
 if (!id_buku) {
   message.style.color = "red";
   message.textContent = "ID buku tidak valid";
@@ -11,11 +15,20 @@ if (!id_buku) {
 }
 
 async function requireAdminSession() {
+  const token = getToken();
+  if (!token) {
+    window.location.href = "login.html";
+    throw new Error("Unauthorized");
+  }
   const res = await fetch(
     "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
-    { method: "GET", credentials: "include" }
+    {
+      method: "GET",
+      headers: { Authorization: "Bearer " + token },
+    }
   );
   if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem("adminToken");
     window.location.href = "login.html";
     throw new Error("Unauthorized");
   }
@@ -28,9 +41,10 @@ async function requireAdminSession() {
 
 async function loadBook() {
   try {
+    const token = getToken();
     const res = await fetch(
       `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id_buku}`,
-      { credentials: "include" }
+      { headers: { Authorization: "Bearer " + token } }
     );
 
     if (!res.ok) {
@@ -65,6 +79,7 @@ async function loadBook() {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  const token = getToken();
 
   const peminjaman = {
     id_buku,
@@ -78,7 +93,6 @@ form.addEventListener("submit", async (e) => {
     message.textContent = "Nama peminjam wajib diisi";
     return;
   }
-
   if (!peminjaman.alamat_peminjam) {
     message.style.color = "red";
     message.textContent = "Alamat peminjam wajib diisi";
@@ -90,8 +104,10 @@ form.addEventListener("submit", async (e) => {
       "https://be-perpustakaantanjungrejo.vercel.app/admin/pinjam",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
         body: JSON.stringify(peminjaman),
       }
     );

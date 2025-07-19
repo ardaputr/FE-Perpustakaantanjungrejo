@@ -19,13 +19,14 @@ document
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({ username, password }),
         }
       );
       const data = await res.json();
 
-      if (res.ok) {
+      if (res.ok && data.token) {
+        // Simpan token JWT ke localStorage
+        localStorage.setItem("adminToken", data.token);
         message.style.color = "#388e3c";
         message.textContent = "Login berhasil, mengalihkan...";
         setTimeout(() => {

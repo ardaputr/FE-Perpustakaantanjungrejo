@@ -1,12 +1,34 @@
 const form = document.getElementById("tambahForm");
 const message = document.getElementById("message");
+const inputJudul = document.getElementById("judul");
+const inputPenulis = document.getElementById("penulis");
+const inputPenerbit = document.getElementById("penerbit");
+const inputTahun = document.getElementById("tahun_terbit");
+const inputHalaman = document.getElementById("jumlah_halaman");
+const inputKategori = document.getElementById("kategori");
+const inputStok = document.getElementById("stok");
+const inputGambar = document.getElementById("link_gambar");
+let allBooks = [];
+
+function getToken() {
+  return localStorage.getItem("adminToken");
+}
 
 async function requireAdminSession() {
+  const token = getToken();
+  if (!token) {
+    window.location.href = "login.html";
+    throw new Error("Unauthorized");
+  }
   const res = await fetch(
     "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
-    { method: "GET", credentials: "include" }
+    {
+      method: "GET",
+      headers: { Authorization: "Bearer " + token },
+    }
   );
   if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem("adminToken");
     window.location.href = "login.html";
     throw new Error("Unauthorized");
   }
@@ -19,9 +41,10 @@ async function requireAdminSession() {
 
 async function fetchBooks() {
   try {
+    const token = getToken();
     const res = await fetch(
       "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
-      { method: "GET", credentials: "include" }
+      { method: "GET", headers: { Authorization: "Bearer " + token } }
     );
     if (res.status === 401 || res.status === 403) {
       window.location.href = "login.html";
@@ -64,6 +87,7 @@ inputJudul.addEventListener("input", () => {
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  const token = getToken();
 
   const dataBuku = {
     judul: inputJudul.value.trim(),
@@ -108,8 +132,8 @@ form.addEventListener("submit", async (e) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
         },
-        credentials: "include",
         body: JSON.stringify(dataBuku),
       }
     );

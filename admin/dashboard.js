@@ -2,13 +2,27 @@ const tableBody = document.getElementById("booksTableBody");
 let allBooks = [];
 let kategoriList = [];
 
-// Proteksi session admin dengan cek langsung ke backend
+// Helper: Ambil token
+function getToken() {
+  return localStorage.getItem("adminToken");
+}
+
+// Proteksi session admin
 async function requireAdminSession() {
+  const token = getToken();
+  if (!token) {
+    window.location.href = "login.html";
+    throw new Error("Unauthorized");
+  }
   const res = await fetch(
     "https://be-perpustakaantanjungrejo.vercel.app/admin/books",
-    { method: "GET", credentials: "include" }
+    {
+      method: "GET",
+      headers: { Authorization: "Bearer " + token },
+    }
   );
   if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem("adminToken");
     window.location.href = "login.html";
     throw new Error("Unauthorized");
   }
@@ -18,17 +32,7 @@ async function requireAdminSession() {
 // Logout
 async function logout() {
   if (confirm("Yakin ingin logout?")) {
-    try {
-      await fetch(
-        "https://be-perpustakaantanjungrejo.vercel.app/admin/logout",
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
+    localStorage.removeItem("adminToken");
     window.location.href = "../HomePage.html";
   }
 }
@@ -94,9 +98,10 @@ function renderBooks(books) {
 // Fetch kategori (jika ada)
 async function fetchKategori() {
   try {
+    const token = getToken();
     const res = await fetch(
       "https://be-perpustakaantanjungrejo.vercel.app/admin/categories",
-      { credentials: "include" }
+      { headers: { Authorization: "Bearer " + token } }
     );
     if (res.status === 401 || res.status === 403) {
       window.location.href = "login.html";
@@ -115,7 +120,7 @@ async function fetchKategori() {
 // Fetch buku
 async function fetchBooks() {
   try {
-    allBooks = await requireAdminSession(); // Sekaligus proteksi session
+    allBooks = await requireAdminSession();
     await fetchKategori();
     renderBooks(allBooks);
     updateStats(allBooks);
@@ -129,14 +134,16 @@ async function fetchBooks() {
 async function hapusBuku(id) {
   if (confirm("Apakah anda yakin ingin menghapus buku ini?")) {
     try {
+      const token = getToken();
       const res = await fetch(
         `https://be-perpustakaantanjungrejo.vercel.app/admin/books/${id}`,
         {
           method: "DELETE",
-          credentials: "include",
+          headers: { Authorization: "Bearer " + token },
         }
       );
       if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem("adminToken");
         window.location.href = "login.html";
         return;
       }

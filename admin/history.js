@@ -1,11 +1,21 @@
 const tableBody = document.getElementById("historyTableBody");
 
+function getToken() {
+  return localStorage.getItem("adminToken");
+}
+
 async function requireAdminSession() {
+  const token = getToken();
+  if (!token) {
+    window.location.href = "login.html";
+    throw new Error("Unauthorized");
+  }
   const res = await fetch(
     "https://be-perpustakaantanjungrejo.vercel.app/admin/history",
-    { method: "GET", credentials: "include" }
+    { method: "GET", headers: { Authorization: "Bearer " + token } }
   );
   if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem("adminToken");
     window.location.href = "login.html";
     throw new Error("Unauthorized");
   }
@@ -30,14 +40,16 @@ async function fetchHistory() {
 async function kembalikan(id) {
   if (confirm("Yakin ingin mengembalikan buku ini?")) {
     try {
+      const token = getToken();
       const res = await fetch(
         `https://be-perpustakaantanjungrejo.vercel.app/admin/history/${id}`,
         {
           method: "PUT",
-          credentials: "include",
+          headers: { Authorization: "Bearer " + token },
         }
       );
       if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem("adminToken");
         window.location.href = "login.html";
         return;
       }
@@ -55,4 +67,37 @@ async function kembalikan(id) {
   }
 }
 
+function renderHistory(data) {
+  tableBody.innerHTML = "";
+  if (!data || data.length === 0) {
+    tableBody.innerHTML =
+      '<tr><td colspan="8" class="error">Belum ada riwayat peminjaman.</td></tr>';
+    return;
+  }
+  data.forEach((item) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${item.nama_peminjam || "-"}</td>
+      <td>${item.alamat_peminjam || "-"}</td>
+      <td>${item.judul || "-"}</td>
+      <td>${item.tanggal_peminjaman || "-"}</td>
+      <td>${item.tanggal_pengembalian || "-"}</td>
+      <td>${item.status || "-"}</td>
+      <td>
+        <img src="${item.link_gambar || ""}" alt="cover" class="book-img"
+          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjZjVmNWRjIi8+PHRleHQgeD0iMTUiIHk9IjIwIiBmaWxsPSIjY2NjIiBmb250LXNpemU9IjEwIj7wn5ObPC90ZXh0Pjwvc3ZnPg=='" />
+      </td>
+      <td>
+        ${
+          item.status === "Dipinjam"
+            ? `<button onclick="kembalikan(${item.id_peminjaman})">Kembalikan</button>`
+            : "-"
+        }
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
+window.kembalikan = kembalikan;
 document.addEventListener("DOMContentLoaded", fetchHistory);
