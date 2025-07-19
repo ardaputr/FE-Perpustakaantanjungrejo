@@ -1,15 +1,15 @@
-const hasToken = sessionStorage.getItem("adminToken");
-if (!hasToken) {
-  window.location.href = "login.html";
-  return;
-}
+// const hasToken = sessionStorage.getItem("adminToken");
+// if (!hasToken) {
+//   window.location.href = "login.html";
+//   return;
+// }
 
-// Dan saat ada error 401, tambahkan:
-if (res.status === 401 || res.status === 403) {
-  sessionStorage.clear();
-  window.location.href = "login.html";
-  return;
-}
+// // Dan saat ada error 401, tambahkan:
+// if (res.status === 401 || res.status === 403) {
+//   sessionStorage.clear();
+//   window.location.href = "login.html";
+//   return;
+// }
 
 document
   .getElementById("loginForm")
